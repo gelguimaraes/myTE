@@ -315,7 +315,7 @@ let getTopList = (opt, id, type) => $.ajax({
             s.type = "application/ld+json";
             s.text = stringJSON;
             window.onload = function() {
-                $("head").append(s);
+                $("#ul" + id).append(s);
             };
 
 
