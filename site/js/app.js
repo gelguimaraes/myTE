@@ -314,7 +314,10 @@ let getTopList = (opt, id, type) => $.ajax({
             var s = document.createElement("script");
             s.type = "application/ld+json";
             s.text = stringJSON;
-            $("head").append(s);
+            window.onload = function() {
+                $("head").append(s);
+            };
+
 
             //console.log(stringJSON)
         }
