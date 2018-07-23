@@ -310,31 +310,46 @@ let getTopList = (opt, id, type) => $.ajax({
         var stringJSON;
 
         if (tracks.length > 0) {
-            $.getJSON(MusicPlaylist, function(data) {
-                $( "<script/>", {
-                    "type": "application/ld+json",
-                    "html": JSON.stringify(data)
-                }).appendTo( "head" );
-            });
-            //stringJSON = JSON.stringify(MusicPlaylist);
+            stringJSON = JSON.stringify(MusicPlaylist);
+            var s = document.createElement("script");
+            s.type = "application/ld+json";
+            s.text = stringJSON;
+            $("head").append(s);
+
             //console.log(stringJSON)
         }
         if (artists.length > 0) {
             stringJSON = JSON.stringify(ArtistPlaylist);
+            var s = document.createElement("script");
+            s.type = "application/ld+json";
+            s.text = stringJSON;
+            $("head").append(s);
             //console.log(stringJSON)
         }
         if (albums.length > 0) {
             stringJSON = JSON.stringify(AlbumPlaylist);
+            var s = document.createElement("script");
+            s.type = "application/ld+json";
+            s.text = stringJSON;
+            $("head").append(s);
             //console.log(stringJSON)
         }
 
         if (tracksCountry.length > 0) {
             stringJSON = JSON.stringify(MusicPlaylistCountry);
+            var s = document.createElement("script");
+            s.type = "application/ld+json";
+            s.text = stringJSON;
+            $("head").append(s);
             // console.log(stringJSON)
         }
 
         if (artistsCountry.length > 0) {
             stringJSON = JSON.stringify(ArtistPlaylistCountry);
+            var s = document.createElement("script");
+            s.type = "application/ld+json";
+            s.text = stringJSON;
+            $("head").append(s);
            // console.log(stringJSON)
         }
 
