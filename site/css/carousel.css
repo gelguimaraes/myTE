@@ -1,0 +1,47 @@
+
+#carousel {
+    background: rgba(5, 5, 5, 0.71);
+    height: 225px;
+    width: 100%;
+    overflow: hidden;
+ 
+}
+ul.cat {
+    user-select: none;
+    margin-top: 37px;
+    list-style-type: none;
+    transform-style: preserve-3d;
+}
+
+ul.cat li {
+    float: left;
+    width: 240px;
+	height: 150px;
+    min-width: 240px;
+    cursor: pointer;
+    background: #FFF;
+    margin: 0 5px;
+	overflow: hidden;
+}
+
+
+ul.cat li.itemslide-active {
+	transform: scale(1.2);
+	z-index: 10;
+	position:relative;
+	box-shadow: 0 0 12px 2px #FFF
+}
+
+ul.cat li img{
+	margin-bottom: -40px;	
+}
+ul.cat li span{
+	display: inline-block;
+    color: #292929;
+    font-size: 17px;
+    width: 122px;
+    background-color: rgba(255, 255, 255, 0.78);
+    padding: 2px 25px;
+    font-weight: bold;
+    transform: skew(-22deg) translateX(-7px);
+}

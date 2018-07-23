@@ -1,0 +1,17 @@
+$fa-font-path: "~font-awesome/fonts";
+@import "~font-awesome/scss/font-awesome";
+
+@import "icon-select";
+@import "nice-select";
+@import "carousel";
+@import "lity";
+@import "equalizer";
+@import "alertify";
+@import "vegas";
+@import "jplayer";
+@import "app";
+
+
+
+
+

@@ -1,0 +1,169 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title>Max Hits - Os Hits mais tocados no Brasil e no Mundo!</title>
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/font-awesome.css">
+    <link rel="stylesheet" href="css/icon-select.css">
+    <link rel="stylesheet" href="css/nice-select.css">
+    <link rel="stylesheet" href="css/carousel.css">
+    <link rel="stylesheet" href="css/lity.css"/>
+    <link rel="stylesheet" href="css/equalizer.css">
+    <link rel="stylesheet" href="css/alertify.css">
+    <link rel="stylesheet" href="css/jplayer.css"/>
+    <link rel="stylesheet" href="css/vegas.css">
+    <link rel="stylesheet" href="css/responive.css">
+    <link rel="stylesheet" href="css/app.css">
+    <script src="js/jquery.js"></script>
+    <script src="js/nice-select.js"></script>
+    <script src="js/item-slide.js"></script>
+    <script src="js/vegas.js"></script>
+    <script src="js/alertify.js"></script>
+    <script src="js/bootstrap.js"></script>
+</head>
+<body>
+<header>
+    <div class="radio affix-top" data-spy="affix" data-offset-top="1">
+        <div id="jplayer" class="jplayer"></div>
+        <div id="jp_container" class="audio" role="application">
+            <div class="gui interface">
+                <div class="folder"></div>
+                <div class="data-radio">
+                    <div class="titleRadio"></div>
+                    <div class="current-time" role="timer">&nbsp;</div>
+                </div>
+                <div class="controls">
+                    <button class="previous" role="button" tabindex="0"><i class="fa fa-backward"></i></button>
+                    <button class="play" role="button" tabindex="0"><i class="fa fa-play-circle"></i></button>
+                    <button class="pause" role="button" tabindex="0"><i class="fa fa-pause"></i></button>
+                    <button class="stop" role="button" tabindex="0"><i class="fa fa-stop"></i></button>
+                    <button class="next" role="button" tabindex="0"><i class="fa fa-forward"></i></button>
+                </div>
+                <div class="volume-controls">
+                    <button class="unmute" role="button" tabindex="0"><i class="fa fa-volume-off"></i></button>
+                    <button class="mute" role="button" tabindex="0"><i class="fa fa-volume-down"></i></button>
+                    <div class="volume-bar">
+                        <div class="volume-bar-value"></div>
+                    </div>
+                    <button class="volume-max" role="button" tabindex="0"><i class="fa fa-volume-up"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="header">
+        <div class="logo"><a href="index.html"><i class="fa fa-headphones"></i> max hits</a>
+            <p> os hits mais tocados no brasil e no mundo</p>
+        </div>
+        <div class="equalizer"></div>
+        <div class="search">
+            <div class="bgSearch">
+                <input type="text" name="search" id="search" autocomplete="off" placeholder="Digite uma mídia...">
+                <label for="select"></label>
+                <select name="select" id="select">
+                    <option value="track.search">Músicas</option>
+                    <option value="album.search">Álbums</option>
+                    <option value="artist.search">Artistas</option>
+                </select>
+                <button id="submit" value="Buscar" name="buscar">Buscar</button>
+            </div>
+        </div>
+    </div>
+</header>
+<main>
+    <div class="resultSearch"></div>
+    <div id="carousel">
+        <ul class="cat">
+            <li class="cat-link" data-radio="classiceurodance" data-name="dance"><img src="images/ritmos/dance.jpg"
+                                                                                      alt="Dance"><span>Dance</span>
+            </li>
+            <li class="cat-link" data-radio="house" data-name="house"><img src="images/ritmos/house.jpg"
+                                                                           alt="House"><span>House</span></li>
+            <li class="cat-link current" data-radio="electrohouse" data-name="eletronic"><img
+                    src="images/ritmos/eletronic.jpg" alt="eletronica"><span>Eletrônica</span></li>
+            <li class="cat-link" data-radio="trance" data-name="trance"><img src="images/ritmos/trance.jpg"
+                                                                             alt="Trance"><span>Trance</span></li>
+            <li class="cat-link" data-radio="eurodance" data-name="eurodance"><img src="images/ritmos/eurodance.jpg"
+                                                                                   alt="Eurodance"><span>Eurodance</span>
+            </li>
+            <li class="cat-link" data-radio="deepnudisco" data-name="disco"><img src="images/ritmos/disco.jpg"
+                                                                                 alt="Disco"><span>Disco</span></li>
+            <li class="cat-link" data-radio="techno" data-name="techno"><img src="images/ritmos/techno.jpg"
+                                                                             alt="Techno"><span>Techno</span></li>
+            <li class="cat-link" data-radio="chillout" data-name="chillout"><img src="images/ritmos/chillout.jpg"
+                                                                                 alt="Chillout"><span>Chillout</span>
+            </li>
+            <li class="cat-link" data-radio="00sclubhits" data-name="club"><img src="images/ritmos/club.jpg" alt="Club"><span>Club</span>
+            </li>
+            <li class="cat-link" data-radio="ambient" data-name="ambient"><img src="images/ritmos/ambient.jpg"
+                                                                               alt="Ambiente"><span>Ambiente</span></li>
+            <li class="cat-link" data-radio="spacemusic" data-name="space dreams"><img
+                    src="images/ritmos/space dreams.jpg" alt="Space Dreams"><span>Space Dreams</span></li>
+            <li class="cat-link" data-radio="nightcore" data-name="nightcore"><img src="images/ritmos/nightcore.jpg"
+                                                                                   alt="Nightcore"><span>Nightcore</span>
+            </li>
+            <li class="cat-link" data-radio="djmixes" data-name="dj mixes"><img src="images/ritmos/dj mixes.jpg"
+                                                                                alt="DJ Mixes"><span>DJ Mixes</span>
+            </li>
+            <li class="cat-link" data-radio="drumandbass" data-name="bass"><img src="images/ritmos/bass.jpg" alt="Bass"><span>Bass</span>
+            </li>
+        </ul>
+    </div>
+    <div class="lists">
+        <div id="topList">
+            <ul class="tabsCat">
+                <li id="tabtracks" class="tab-link current" data="tracks"><i class="fa fa-play"></i> Tracks</li>
+                <li id="tabartists" class="tab-link" data="artists"><i class="fa fa-user-circle"></i> Artistas</li>
+                <li id="tabalbums" class="tab-link" data="albums"><i class="fa fa-music"></i> Álbums</li>
+            </ul>
+            <div id="tracks" class="tab-content-cat current">
+                <ul id="ultracks">
+                </ul>
+            </div>
+            <div id="artists" class="tab-content-cat">
+                <ul id="ulartists">
+                </ul>
+            </div>
+            <div id="albums" class="tab-content-cat">
+                <ul id="ulalbums">
+                </ul>
+            </div>
+        </div>
+        <div id="topListCountry">
+            <ul class="tabsCountry">
+                <li id="tabtracksCountry" class="tab-link-country current" data="tracks"><i class="fa fa-play"></i>
+                    Tracks
+                </li>
+                <li id="tabartistsCountry" class="tab-link-country" data="artists"><i class="fa fa-user-circle"></i>
+                    Artistas
+                </li>
+            </ul>
+            <div id="selectCountry"></div>
+            <div id="tracksCountry" class="tab-content-country current">
+                <ul id="ultracksCountry">
+                </ul>
+            </div>
+            <div id="artistsCountry" class="tab-content-country">
+                <ul id="ulartistsCountry">
+                </ul>
+            </div>
+        </div>
+    </div>
+</main>
+<footer>
+    <p><span class="copy">©</span> Copyright 2018 <span class="maxhits">max hits</span>. Todos os Direitos
+        Reservados<br>
+        <a href="mailto:gesoaldo.guimaraes@academico.ifpb.edu.br" target="_blank">Desenvolvido por Gesoaldo Guimarães |
+            Sistemas para Internet - IFPB </a></p>
+    <p class="references"><span>API By <a href="https://www.last.fm/api" target="_blank"><img src="images/lastfm.png"
+                                                                                              alt="Last FM"></a></span><span>Stream for <a
+            href="https://www.di.fm/" target="_blank"><img src="images/difm.png" alt="DI FM"></a></span></p>
+</footer>
+<div id="boxInfo" class="lity-hide"></div>
+<script src="js/icon-select.js"></script>
+<script src="js/lity.js"></script>
+<script src="js/jplayer.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

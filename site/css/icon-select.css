@@ -1,0 +1,71 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Nov 28, 2013, 7:09:35 AM
+    Author     : bugraozden
+*/
+
+.icon-select {
+	width: 0px;
+	margin: -38px 0 0px 197px;
+}
+.icon-select .selected-box, .icon-select .selected-box:hover  {
+	position: relative;
+	margin: 0px;
+	padding: 0px;
+	width: 53px !important; /* sil */
+	height: 38px !important; /* sil */
+	background-color: rgba(5, 5, 5, 0.71);
+	cursor:pointer;
+
+}
+
+.icon-select .selected-icon {
+	position: absolute;
+	margin: 0px;
+	padding: 0px;
+	top: 5px;
+	left: 5px;
+	width: 48px; /* sil */
+	height: 34px; /* sil */
+	display: flex;
+	align-items: center;
+	border-radius: 3px;
+}
+.icon-select .component-icon {
+	position: absolute;
+	bottom: 8px;
+	right: 4px;
+}
+.icon-select .box {
+	position: absolute;
+	top: 0px;
+	left: 71px;
+	margin: 0px;
+	padding: 0px;
+	width: 170px; /* sil */
+	height: 170px; /* sil */
+	background-color: none;
+	overflow: auto;
+
+}
+.icon-select .icon {
+	position: relative;
+	margin: 5px 0px 0px 5px;
+	padding: 0px;
+	width: 48px; /* sil */
+	height: 34px !important; /* sil */
+	display: flex;
+	align-items: center;
+	border: 1px solid transparent;
+	overflow: hidden;
+	float: left;
+}
+.icon-select .icon:hover, .icon-select .icon.selected {
+	border: 1px solid #FFF;
+	background-color: #FFF
+}
+
