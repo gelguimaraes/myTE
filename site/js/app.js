@@ -99,7 +99,7 @@ let getTopList = (opt, id, type) => $.ajax({
     url: (optAPI.apiUrl + 'method=' + opt.method + '&tag=' + opt.tag + '&country=' + opt.country + '&api_key=' + optAPI.apiKey + '&format=json&limit=' + opt.limit),
     method: 'GET',
     dataType: 'JSON',
-    async: true,
+    async: false,
     success: function (json) {
         //console.log(opt);
 
