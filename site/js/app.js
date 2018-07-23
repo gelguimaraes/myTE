@@ -93,6 +93,7 @@ $('#search').keypress(function (e) {
         execSearch();
 });
 
+
 //recuperando listas de tracks, albuns e artistas por categoria e/ou por pais
 let getTopList = (opt, id, type) => $.ajax({
     url: (optAPI.apiUrl + 'method=' + opt.method + '&tag=' + opt.tag + '&country=' + opt.country + '&api_key=' + optAPI.apiKey + '&format=json&limit=' + opt.limit),
@@ -100,6 +101,7 @@ let getTopList = (opt, id, type) => $.ajax({
     dataType: 'JSON',
     success: function (json) {
         //console.log(opt);
+
         let firstKey = Object.keys(json)[0];
         //console.log(firstKey)
         let secondKey = Object.keys(json[firstKey])[0];
@@ -314,11 +316,7 @@ let getTopList = (opt, id, type) => $.ajax({
             var s = document.createElement("script");
             s.type = "application/ld+json";
             s.text = stringJSON;
-            window.onload = function() {
-                $("#ul" + id).append(s);
-            };
-
-
+            $("head").append(s);
             //console.log(stringJSON)
         }
         if (artists.length > 0) {
