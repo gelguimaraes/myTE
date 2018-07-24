@@ -362,9 +362,9 @@ let getInformation = (method, artist, trackOrAlbum) => $.ajax({
                             "value": ((item.listeners) ? nFormatter(item.listeners, 1) : 'nenhum'),
                         }
                     },
-                    "dateCreated": item.wiki.published,
-                    "description": item.wiki.summary,
-                    "text": item.wiki.content,
+					"dateCreated": ((item.wiki) ? item.wiki.published : ""),
+                    "description": ((item.wiki) ? item.wiki.summary : ""),
+                    "text": ((item.wiki) ? item.wiki.content : ""),
                     "keywords": item.toptags.tag.map(t =>  t.name).join(', '),
                     "byArtist": {
                         "@type": "MusicGroup",
