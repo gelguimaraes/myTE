@@ -99,7 +99,7 @@ let getTopList = (opt, id, type) => $.ajax({
     url: (optAPI.apiUrl + 'method=' + opt.method + '&tag=' + opt.tag + '&country=' + opt.country + '&api_key=' + optAPI.apiKey + '&format=json&limit=' + opt.limit),
     method: 'GET',
     dataType: 'JSON',
-    async: false,
+    async: true,
     success: function (json) {
         //console.log(opt);
 
@@ -107,8 +107,8 @@ let getTopList = (opt, id, type) => $.ajax({
         //console.log(firstKey)
         let secondKey = Object.keys(json[firstKey])[0];
         //console.log(secondKey)
-        let objItems = json[firstKey][secondKey],
-            html;
+        let objItems =  json[firstKey][secondKey]
+        let html, position = 1;
 
         let method = opt.method.substr(0, 3);
         //console.log(method)
@@ -130,6 +130,8 @@ let getTopList = (opt, id, type) => $.ajax({
         artistsCountry = [];
 
 
+
+        //console.log(objItems)
         //monta o titulo da tab
         $("div#" + id).html("<ul id='ul" + id + "'><span class='topTitle'>Top " + opt.limit + " " + midias + localization + "</span></ul>");
 
@@ -143,7 +145,9 @@ let getTopList = (opt, id, type) => $.ajax({
                             track = {
                                 "@type": "MusicRecording",
                                 "name": item.name,
+                                "position": item['@attr']['rank'],
                                 "image": ((item.image[1]['#text']) ? item.image[1]['#text'] : "images/track.png"),
+                                "duration": item.duration + "s",
                                 "byArtist": {
                                     "@type": "MusicGroup",
                                     "name": item.artist.name
@@ -152,15 +156,15 @@ let getTopList = (opt, id, type) => $.ajax({
 
                             tracks.push(track)
 
-                            MusicPlaylist = {
+                           MusicPlaylist = {
                                 "@context": "http://schema.org",
                                 "@type": "MusicPlaylist",
-                                "name": "Top Tracks",
+                                "name": "Top Tracks em " + type.cat,
                                 "genre": type.cat,
                                 "track": tracks
 
                             }
-
+                            crateJson_ld(MusicPlaylist, "musicList")
                             break;
 
                         case 'artist':
@@ -185,10 +189,10 @@ let getTopList = (opt, id, type) => $.ajax({
                             ArtistPlaylist = {
                                 "@context": "http://schema.org",
                                 "@type": "Itemlist",
-                                "name": "Top Artists",
+                                "name": "Top Artists em " + type.cat,
                                 "itemListElement": artists
                             }
-
+                            crateJson_ld(ArtistPlaylist, "itemList")
                             break;
 
                         case 'album':
@@ -216,9 +220,10 @@ let getTopList = (opt, id, type) => $.ajax({
                             AlbumPlaylist = {
                                 "@context": "http://schema.org",
                                 "@type": "Itemlist",
-                                "name": "Top Albums",
+                                "name": "Top Albums em " + type.cat,
                                 "itemListElement": albums
                             }
+                            crateJson_ld(AlbumPlaylist, "itemList")
                             break;
                     }
 
@@ -236,7 +241,7 @@ let getTopList = (opt, id, type) => $.ajax({
                                     "@type": "InteractionCounter",
                                     "identifier": {
                                         "@type": "PropertyValue",
-                                        "name": "Ouvintes de " + item.name,
+                                        "name": "Ouvintes do track " + item.name,
                                         "value": nFormatter(item.listeners, 1)
                                     }
                                 },
@@ -250,41 +255,42 @@ let getTopList = (opt, id, type) => $.ajax({
 
                             MusicPlaylistCountry = {
                                 "@context": "http://schema.org",
-                                "@type": "CreativeWork",
+                                "@type": "MusicPlaylist",
                                 "contentLocation": {
                                     "@type": "Place",
                                     "name": type.country,
                                 },
-                                "subjectOf": {
-                                    "@type": "MusicPlaylist",
-                                    "name": "Top Tracks in " + type.country,
-                                    "track": tracksCountry
-                                }
-
+                                "name": "Top Tracks in " + type.country,
+                                "track": tracksCountry
                             }
 
+                            crateJson_ld(MusicPlaylistCountry, "musicCountryList")
                             break;
 
                         case 'artist':
-                            html = "<li class='artist'><figure><img width='34' height='34' src='" + ((item.image[0]['#text']) ? item.image[0]['#text'] : "images/artist.png") + "'></img></figure><p><a data-lity class='artistName' href='#boxInfo' onclick=\"$('#boxInfo').html('<div class=loading></div>'); getInformation('artist.getInfo', '" + addslashes(item.name) + "')\">" + item.name + "</a></p><span class='ouvintes'><i class='fa fa-headphones'></i>" + nFormatter(item.listeners, 1) + "</span></li>"
+                            html = "<li class='artist'><span class='rank'>#" + position + "</span><figure><img width='34' height='34' src='" + ((item.image[0]['#text']) ? item.image[0]['#text'] : "images/artist.png") + "'></img></figure><p><a data-lity class='artistName' href='#boxInfo' onclick=\"$('#boxInfo').html('<div class=loading></div>'); getInformation('artist.getInfo', '" + addslashes(item.name) + "')\">" + item.name + "</a></p><span class='ouvintes'><i class='fa fa-headphones'></i>" + nFormatter(item.listeners, 1) + "</span></li>"
 
                             artistCountry = {
                                 "@type": "ListItem",
-                                "name": "Top Artists in " + type.country,
+                                "position": position++,
                                 "item": {
                                     "@type": "MusicGroup",
                                     "name": item.name,
+                                    "location": {
+                                        "@type": "Place",
+                                        "name": type.country,
+                                    },
                                     "url": "index.html?=" + item.url,
                                     "sameAs": item.url,
                                     "image": ((item.image[0]['#text']) ? item.image[0]['#text'] : "images/artist.png"),
-                                    "interactionStatistic": {
-                                        "@type": "InteractionCounter",
-                                        "identifier": {
-                                            "@type": "PropertyValue",
-                                            "name": "Ouvintes de " + item.name,
-                                            "value": nFormatter(item.listeners, 1)
-                                        }
-                                    }
+                                    // "interactionStatistic": {
+                                    //     "@type": "InteractionCounter",
+                                    //     "identifier": {
+                                    //         "@type": "PropertyValue",
+                                    //         "name": "Ouvintes de " + item.name,
+                                    //         "value": nFormatter(item.listeners, 1)
+                                    //     }
+                                    // }
                                 }
                             };
 
@@ -292,15 +298,11 @@ let getTopList = (opt, id, type) => $.ajax({
 
                             ArtistPlaylistCountry = {
                                 "@context": "http://schema.org",
-                                "@type": "CreativeWork",
-                                "contentLocation": {
-                                    "@type": "Place",
-                                    "name": type.country,
-                                },
-                                "subjectOf": artistsCountry
-
+                                "@type": "Itemlist",
+                                "name": "Top Artists in " + type.country,
+                                "itemListElement":  artistsCountry
                             }
-
+                            crateJson_ld(ArtistPlaylistCountry, "itemList")
 
                             break;
 
@@ -309,57 +311,12 @@ let getTopList = (opt, id, type) => $.ajax({
                 return html;
             }) //fim funcao append
         ) //fim map
-
-        var stringJSON;
-
-        if (tracks.length > 0) {
-            stringJSON = JSON.stringify(MusicPlaylist);
-            var s = document.createElement("script");
-            s.type = "application/ld+json";
-            s.text = stringJSON;
-            $("head").append(s);
-            //console.log(stringJSON)
-        }
-        if (artists.length > 0) {
-            stringJSON = JSON.stringify(ArtistPlaylist);
-            var s = document.createElement("script");
-            s.type = "application/ld+json";
-            s.text = stringJSON;
-            $("head").append(s);
-            //console.log(stringJSON)
-        }
-        if (albums.length > 0) {
-            stringJSON = JSON.stringify(AlbumPlaylist);
-            var s = document.createElement("script");
-            s.type = "application/ld+json";
-            s.text = stringJSON;
-            $("head").append(s);
-            //console.log(stringJSON)
-        }
-
-        if (tracksCountry.length > 0) {
-            stringJSON = JSON.stringify(MusicPlaylistCountry);
-            var s = document.createElement("script");
-            s.type = "application/ld+json";
-            s.text = stringJSON;
-            $("head").append(s);
-            // console.log(stringJSON)
-        }
-
-        if (artistsCountry.length > 0) {
-            stringJSON = JSON.stringify(ArtistPlaylistCountry);
-            var s = document.createElement("script");
-            s.type = "application/ld+json";
-            s.text = stringJSON;
-            $("head").append(s);
-           // console.log(stringJSON)
-        }
-
     }, //fim json
     error: function (json) {
         //alert("Error");
     }
-}); //fim ajax
+})//fim ajax
+
 
 //recuperando as informações de artista, album ou track
 let getInformation = (method, artist, trackOrAlbum) => $.ajax({
@@ -383,8 +340,39 @@ let getInformation = (method, artist, trackOrAlbum) => $.ajax({
 
                 html = "<div class='contentInfo'><div class='contentTop'><a class='infoTitle' target='_blank' href='" + item.url + "'><i class='fa fa-play'></i>" + item.name + ((item.duration !== "0") ? " [" + formatMiliSeconds(item.duration) + "]" : "") + "</a></div><div class='contentLeft'><figure><img class='imgTrackInfo' src='" + ((item.album && item.album.image[3]['#text'] !== '') ? item.album.image[3]['#text'] : "images/album.png") + "'></figure>" + ((item.album) ? "<p class='Album'><a class='infoAlbum' href='#boxInfo' onclick=\"$('#boxInfo').html('<div class=loading></div>'); getInformation('album.getInfo', '" + addslashes(item.artist.name) + "','" + addslashes(item.album.title) + "')\"><i class='fa fa-music'></i>" + item.album.title + "</a></p>" : '') + "<p class='Artist'><a  class='infoArtist' href='#boxInfo' onclick=\"$('#boxInfo').html('<div class=loading></div>'); getInformation('artist.getInfo', '" + addslashes(item.artist.name) + "')\"><i class='fa fa-user-circle'></i>" + item.artist.name + "</a></p> <span class='ouvintes'><i class='fa fa-headphones'></i>" + ((item.listeners) ? nFormatter(item.listeners, 1) : 'sem') + " ouvintes</span> <span class='toptags'><i class='fa fa-tags'></i>Top Tags:<br>" + item.toptags.tag.map(t => '#' + t.name).join(' ') + "</span></div><div class='contentRight'>" + ((item.wiki) ? "<p class='wiki'>Biografia by Wiki</p><p class='publibWiki'><i class='fa fa-calendar-o'></i>" + item.wiki.published + "</p><p class='sumaryWiki'><i class='fa fa-comments'></i>" + item.wiki.summary + "</p><p class='contentWiki'><i class='fa fa-align-justify'></i>" + item.wiki.content + "</p>" + ((item.wiki.content.length > 720) ? "<p class='expand'><a class='textExpand'><i class='fa fa-angle-double-down'></i></a><p>" : '') : '') + "</div></div>";
 
+
+
+
+
                 //tracks similares
-                getTrackSimilar(item.artist.name.replace('&', '%26'), item.name.replace('&', '%26'));
+               getTrackSimilar(item.artist.name.replace('&', '%26'), item.name.replace('&', '%26'));
+
+                MusicRecording = {
+                    "@context": "http://schema.org",
+                    "@type": "MusicRecording",
+                    "name": item.name,
+                    "image": ((item.album && item.album.image[3]['#text'] !== '') ? item.album.image[3]['#text'] : "images/album.png"),
+                    "duration": item.duration + "ms",
+                    "inAlbum" : item.album.title,
+                    "interactionStatistic": {
+                        "@type": "InteractionCounter",
+                        "identifier": {
+                            "@type": "PropertyValue",
+                            "name": "Ouvintes do track " + item.name,
+                            "value": ((item.listeners) ? nFormatter(item.listeners, 1) : 'nenhum'),
+                        }
+                    },
+                    "dateCreated": item.wiki.published,
+                    "description": item.wiki.summary,
+                    "text": item.wiki.content,
+                    "keywords": item.toptags.tag.map(t =>  t.name).join(', '),
+                    "byArtist": {
+                        "@type": "MusicGroup",
+                        "name": item.artist.name
+                    }
+                }
+
+                crateJson_ld(MusicRecording, "musicRecording")
 
             } else if (method === 'artist') {
                 $(".lity").css({
@@ -396,7 +384,28 @@ let getInformation = (method, artist, trackOrAlbum) => $.ajax({
                 getTopTracksOrAlbumsforArtist(item.name.replace('&', '%26'), 'album', 5);
 
                 // top tracks do artista
-                getTopTracksOrAlbumsforArtist(item.name.replace('&', '%26'), 'track', 16);
+                 getTopTracksOrAlbumsforArtist(item.name.replace('&', '%26'), 'track', 16);
+
+                MusicGroup = {
+                    "@context": "http://schema.org",
+                    "@type": "MusicGroup",
+                    "name": item.name,
+                    "image": ((item.image && item.image[3]['#text'] !== '') ? item.image[3]['#text'] : "images/artist.png"),
+                    // "interactionStatistic": {
+                    //     "@type": "InteractionCounter",
+                    //     "identifier": {
+                    //         "@type": "PropertyValue",
+                    //         "name": "Ouvintes do Artista " + item.name,
+                    //         "value": ((item.stats.listeners) ? nFormatter(item.stats.listeners, 1) : 'sem')
+                    //     }
+                    // },
+                    //"dateCreated": item.bio.published,
+                    "description": item.bio.content,
+                   // "keywords": item.tags.tag.map(t => '#' + t.name).join(', '),
+                    "sameAs": ((item.similar && item.similar.artist !== '') ? item.similar.artist.map((s) => s.url).join(', '): "")
+                }
+
+                crateJson_ld(MusicGroup, "musicGroup")
 
 
             } else if (method === 'album') {
@@ -405,6 +414,48 @@ let getInformation = (method, artist, trackOrAlbum) => $.ajax({
                 });
 
                 html = "<div class='contentInfo'><div class='contentTop'><a class='infoTitle' target='_blank' href='" + item.url + "'><i class='fa fa-music'></i>" + item.name + "</a></div><div class='contentLeft'><figure><img class='imgAlbumInfo' src='" + ((item.image && item.image[3]['#text'] !== '') ? item.image[3]['#text'] : "images/album.png") + "'></figure><a class='infoArtist' href='#boxInfo' onclick=\"$('#boxInfo').html('<div class=loading></div>'); getInformation('artist.getInfo', '" + addslashes(item.artist) + "')\"><i class='fa fa-user-circle'></i>" + item.artist + "</a><span class='ouvintes'><i class='fa fa-headphones'></i>" + ((item.listeners) ? nFormatter(item.listeners, 1) : 'sem') + " ouvintes</span> <span class='toptags'><i class='fa fa-tags'></i>Tags Relacionadas:<br>" + item.tags.tag.map(t => '#' + t.name).join('  ') + "</span></div><div class='contentRight'>" + item.tracks.track.map((tr) => "<a class='infoAlbumTrack' target='_blank' href='" + tr.url + "'><i class='fa fa-play-circle'></i><span class='infoTitleTrack'>" + tr.name + "</span><span class='infoDuracTrack'>[" + formatSeconds(tr.duration) + "]</span></a>").join('') + "</div><div class='contentDown'>" + ((item.wiki) ? "<p class='wiki'>Biografia</p><p class='publibWiki'><i class='fa fa-calendar-o'></i>" + item.wiki.published + "</p><p class='sumaryWiki'><i class='fa fa-comments'></i>" + item.wiki.summary + "</p><p class='contentWiki'><i class='fa fa-align-justify'></i>" + item.wiki.content + "</p>" : "") + "</div></div>";
+
+                let tracksAlbum = []
+
+                item.tracks.track.map((tr) => {
+                    trackAlbum = {
+                        "@type":"MusicRecording",
+                        "name": tr.name,
+                        "url" : tr.url,
+                        "duration": tr.duration + "s",
+                    }
+                    tracksAlbum.push(trackAlbum)
+                })
+
+
+                console.log(tracksAlbum)
+
+                MusicAlbum = {
+                    "@context": "http://schema.org",
+                    "@type": "MusicAlbum",
+                    "name": item.name,
+                    "image": ((item.image && item.image[3]['#text'] !== '') ? item.image[3]['#text'] : "images/album.png"),
+                    "byArtist": {
+                        "@type": "MusicGroup",
+                        "name": item.artist
+                    },
+                    "interactionStatistic": {
+                        "@type": "InteractionCounter",
+                        "identifier": {
+                            "@type": "PropertyValue",
+                            "name": "Ouvintes do Artista " + item.name,
+                            "value": ((item.listeners) ? nFormatter(item.listeners, 1) : 'sem')
+                        }
+                    },
+                    "dateCreated": ((item.wiki) ? item.wiki.published : ""),
+                    "description": ((item.wiki) ? item.wiki.summary : ""),
+                    "text": ((item.wiki) ? item.wiki.content : ""),
+                    "keywords": item.tags.tag.map(t => '#' + t.name).join(', '),
+                    "numTracks" : item.tracks.track.length,
+                    "track": tracksAlbum
+                }
+                crateJson_ld(MusicAlbum , "musicAlbum")
+
             }
 
             return html;
@@ -490,80 +541,110 @@ let getSearch = (method, type, midia) => $.ajax({
 }); //fim ajax
 
 //recuperando tracks similares
-let getTrackSimilar = (artist, track) => $.ajax({
-    url: (optAPI.apiUrl + 'method=track.getsimilar&artist=' + artist + '&track=' + track + '&api_key=' + optAPI.apiKey + '&format=json&limit=15'),
-    method: 'GET',
-    dataType: 'JSON',
-    success: function (json) {
-        let firstKey = Object.keys(json)[0];
-        //console.log(firstKey);
+let getTrackSimilar =  (artist, track) =>  $.ajax({
+        url: (optAPI.apiUrl + 'method=track.getsimilar&artist=' + artist + '&track=' + track + '&api_key=' + optAPI.apiKey + '&format=json&limit=15'),
+        method: 'GET',
+        dataType: 'JSON',
+        success: function (json) {
+            let firstKey = Object.keys(json)[0];
+            //console.log(firstKey);
 
-        let secondKey = Object.keys(json[firstKey])[0];
-        //console.log(secondKey)
-        let objItems = json[firstKey][secondKey],
-            html;
-        //console.log(objItems);
-
-
-        $(".contentRight").append("<p class=titleTrackSimilar>Tracks Similares</p><div class=tracksSimilares></div>");
-
-        objItems.map((item) =>
-            $(".tracksSimilares").append(function () {
-                html = "<a class='itemSimilar'  href='#boxInfo' onclick=\"$('#boxInfo').html('<div class=loading></div>'); getInformation('track.getInfo', '" + addslashes(item.artist.name) + "','" + addslashes(item.name) + "')\"><figure><img class='imgSimilar' src='" + ((item.image && item.image[2]['#text'] !== '') ? item.image[2]['#text'] : "images/track.png") + "'></figure><span class='nameSimilar'>" + item.name + "</span>" + ((item.artist) ? "<span class='artistSimilar'><i class='fa fa-user-circle'></i>" + item.artist.name + "</span>" : '') + "</a>";
-                return html;
-            }) //fim funcao append
-        ) //fim map
-        return objItems
-    } //fim json
-});//fim ajax
+            let secondKey = Object.keys(json[firstKey])[0];
+            //console.log(secondKey)
+            let objItems = json[firstKey][secondKey],
+                html;
+            //console.log(objItems);
 
 
-//retornando os top Tracks ou Albuns do artista
-let getTopTracksOrAlbumsforArtist = (artist, trackOrAlbum, limit) => $.ajax({
-    url: (optAPI.apiUrl + 'method=artist.gettop' + trackOrAlbum + 's&artist=' + artist + '&api_key=' + optAPI.apiKey + '&format=json&limit=' + limit),
-    method: 'GET',
-    dataType: 'JSON',
-    success: function (json) {
-        let firstKey = Object.keys(json)[0];
-        //console.log(firstKey);
-        let secondKey = Object.keys(json[firstKey])[0];
-        //console.log(secondKey)
-        let objItems = json[firstKey][secondKey],
-            html, title, icon, totalOuvintes;
-        //console.log(objItems);
-
-
-        if (secondKey === 'track') {
-
-            //totalOuvintes = objItems.reduce((sum, item) => (sum + parseInt(item.listeners)), 0);
-            totalOuvintes = parseInt(objItems[0].listeners);
-
-            $(".contentDown").prepend("<p class=titleArtistTopTrack>Top Tracks de " + json[firstKey]['@attr'].artist + "</p><div class=graficTracks></div>");
-
-
-            let $i = 1;
+            $(".contentRight").append("<p class=titleTrackSimilar>Tracks Similares</p><div class=tracksSimilares></div>");
 
             objItems.map((item) =>
-                $(".graficTracks").append(function () {
-                    html = "<div class='itemsGrafic'><p class='tracksNamesGrafic'><a class='nameArtistTopTrack' href='#boxInfo' onclick=\"$('#boxInfo').html('<div class=loading></div>'); getInformation('track.getInfo', '" + addslashes(item.artist.name) + "','" + addslashes(item.name) + "')\"><span class='numberTracks'>#" + ($i++) + "</span><i class='fa fa-play'></i>" + item.name + "</a></p><p class='tracksBarsGrafic'><span class='barsGrafic' style='width:" + ((parseInt(item.listeners) / totalOuvintes) * 100) + "%'></span><i class='fa fa-headphones'></i><span class='ouvintesArtistTopTrack'>" + nFormatter(parseInt(item.listeners), 1) + "</span></p><div>";
-                    return html;
-                }) //fim funcao apeend
-            ) //fim map
-
-        } else if (secondKey === 'album') {
-
-            $(".contentDown").prepend("<p class=titleArtistTopAlbum>Top Álbums de " + json[firstKey]['@attr'].artist + "</p><div class=ArtistTopAlbum></div>");
-
-            objItems.map((item) =>
-                $(".ArtistTopAlbum").append(function () {
-                    html = "<div class='itemArtistTopAlbum'><figure><img class='imgArtistTopAlbum' src='" + ((item.image && item.image[2]['#text'] !== '') ? item.image[2]['#text'] : "images/album.png") + "'></figure><a class='nameArtistTopAlbum' href='#boxInfo' onclick=\"$('#boxInfo').html('<div class=loading></div>'); getInformation('album.getInfo', '" + addslashes(item.artist.name) + "','" + addslashes(item.name) + "')\"><i class='fa fa-music'></i>" + item.name + "</a></div>";
+                $(".tracksSimilares").append(function () {
+                    html = "<a class='itemSimilar'  href='#boxInfo' onclick=\"$('#boxInfo').html('<div class=loading></div>'); getInformation('track.getInfo', '" + addslashes(item.artist.name) + "','" + addslashes(item.name) + "')\"><figure><img class='imgSimilar' src='" + ((item.image && item.image[2]['#text'] !== '') ? item.image[2]['#text'] : "images/track.png") + "'></figure><span class='nameSimilar'>" + item.name + "</span>" + ((item.artist) ? "<span class='artistSimilar'><i class='fa fa-user-circle'></i>" + item.artist.name + "</span>" : '') + "</a>";
                     return html;
                 }) //fim funcao append
             ) //fim map
-        } //fim else
-    } //fim json
-}); //fim ajax
+        }//fim json
+    })//fim ajax
 
+
+
+//retornando os top Tracks ou Albuns do artista
+let getTopTracksOrAlbumsforArtist =(artist, trackOrAlbum, limit) => {
+    var tracks = []
+    $.ajax({
+        url: (optAPI.apiUrl + 'method=artist.gettop' + trackOrAlbum + 's&artist=' + artist + '&api_key=' + optAPI.apiKey + '&format=json&limit=' + limit),
+        method: 'GET',
+        dataType: 'JSON',
+        success: function (json) {
+            let firstKey = Object.keys(json)[0];
+            //console.log(firstKey);
+            let secondKey = Object.keys(json[firstKey])[0];
+            //console.log(secondKey)
+            let objItems = json[firstKey][secondKey],
+                html, title, icon, totalOuvintes;
+            //console.log(objItems);
+
+
+            if (secondKey === 'track') {
+
+                //totalOuvintes = objItems.reduce((sum, item) => (sum + parseInt(item.listeners)), 0);
+                totalOuvintes = parseInt(objItems[0].listeners);
+
+                $(".contentDown").prepend("<p class=titleArtistTopTrack>Top Tracks de " + json[firstKey]['@attr'].artist + "</p><div class=graficTracks></div>");
+
+
+                let $i = 1, arrayTracks =[];
+
+                objItems.map((item) =>
+                        $(".graficTracks").append(function () {
+                            html = "<div class='itemsGrafic'><p class='tracksNamesGrafic'><a class='nameArtistTopTrack' href='#boxInfo' onclick=\"$('#boxInfo').html('<div class=loading></div>'); getInformation('track.getInfo', '" + addslashes(item.artist.name) + "','" + addslashes(item.name) + "')\"><span class='numberTracks'>#" + ($i++) + "</span><i class='fa fa-play'></i>" + item.name + "</a></p><p class='tracksBarsGrafic'><span class='barsGrafic' style='width:" + ((parseInt(item.listeners) / totalOuvintes) * 100) + "%'></span><i class='fa fa-headphones'></i><span class='ouvintesArtistTopTrack'>" + nFormatter(parseInt(item.listeners), 1) + "</span></p><div>";
+
+
+
+                            track = {
+                                "@type": "MusicRecording",
+                                "name": item.name,
+                                "image": ((item.image[1]['#text']) ? item.image[1]['#text'] : "images/track.png"),
+                                "interactionStatistic": {
+                                    "@type": "InteractionCounter",
+                                    "identifier": {
+                                        "@type": "PropertyValue",
+                                        "name": "Ouvintes do track " + item.name,
+                                        "value": nFormatter(parseInt(item.listeners), 1)
+                                    }
+                                }
+                            }
+
+                            arrayTracks.push(track)
+
+                            TracksMusicGroup = {
+                                "@context": "http://schema.org",
+                                "@type": "MusicGroup",
+                                "name": item.name,
+                                "tracks" : arrayTracks
+                            }
+                            crateJson_ld(TracksMusicGroup, "tracksMusicGroup")
+
+                            return html;
+                        })//fim funcao apeend
+            ) //fim map
+
+            } else if (secondKey === 'album') {
+
+                $(".contentDown").prepend("<p class=titleArtistTopAlbum>Top Álbums de " + json[firstKey]['@attr'].artist + "</p><div class=ArtistTopAlbum></div>");
+
+                objItems.map((item) =>
+                    $(".ArtistTopAlbum").append(function () {
+                        html = "<div class='itemArtistTopAlbum'><figure><img class='imgArtistTopAlbum' src='" + ((item.image && item.image[2]['#text'] !== '') ? item.image[2]['#text'] : "images/album.png") + "'></figure><a class='nameArtistTopAlbum' href='#boxInfo' onclick=\"$('#boxInfo').html('<div class=loading></div>'); getInformation('album.getInfo', '" + addslashes(item.artist.name) + "','" + addslashes(item.name) + "')\"><i class='fa fa-music'></i>" + item.name + "</a></div>";
+                        return html;
+                    }) //fim funcao append
+                ) //fim map
+            } //fim else
+        } //fim json
+    }) //fim ajax
+    return tracks
+}
 
 let getRadio = (opt) => {
     //const url = `http://prem1.di.fm/${opt.radio}?5f14551afa408910a820a8af`;
@@ -727,6 +808,20 @@ let validateInput = (string) => {
     let rx = /^[a-zA-Z_éúíóáÉÚÍÓÁèùìòàçÇÈÙÌÒÀõãñÕÃÑêûîôâÊÛÎÔÂ&'\-\ \s\d]+$/ig;
     return !!(string.match(rx))
 };
+
+
+let crateJson_ld = (object, id) =>{
+    stringJSON = JSON.stringify(object);
+        var s = document.createElement("script");
+        s.type = "application/ld+json";
+        s.text = stringJSON;
+        s.id = id
+    if (document.getElementById(id)) {
+        (elem = document.getElementById(id)).parentNode.removeChild(elem)
+    }
+        $("head").append(s);
+
+}
 
 //carregando todas as funcoes das listas com parametros iniciais
 $(getTopList(optTag, 'tracks', optType));
