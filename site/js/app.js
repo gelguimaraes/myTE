@@ -1033,33 +1033,22 @@ let createTurtle = (data, filename, type) => {
 }
 
 let redirect = () => {
-   // index.html?artist#name
     let url = window.location.href
     let params = url.split("?");
-
-    console.log("parametros: " + params[1])
-    //https://gelguimaraes.github.io/myTE/site/index.html?track#" + item.artist.name +"/"  + item.name
-    //https://gelguimaraes.github.io/myTE/site/index.html?artist#" + item.name
-    //https://gelguimaraes.github.io/myTE/site/index.html?album#" + item.artist.name +"/"  + item.name
+    //console.log("parametros: " + params[1])
 
     if (params[1] != undefined) {
         let type = (params[1].split("#"))[0]
-        console.log("type: " + type)
         let secondParams = (params[1].split("#"))[1]
-        console.log("name: " + secondParams)
-
         let a = document.createElement("a")
         a.setAttribute("data-lity", "")
         a.href = "#boxInfo";
         document.body.appendChild(a);
         if(type != 'artist'){
             let trackorAlbum = secondParams.split("/")
-            console.log("nome artista: " + trackorAlbum[0])
-            console.log("nome trackoralbum: " + trackorAlbum[1])
             a.click(getInformation(type + ".getInfo", trackorAlbum[0], trackorAlbum[1]))
         }else {
             a.click(getInformation(type + ".getInfo", secondParams))
-            console.log("nome artista: " + secondParams)
         }
         document.body.removeChild(a);
     }
