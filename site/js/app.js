@@ -198,7 +198,7 @@ let getTopList = (opt, id, type) => $.ajax({
                                     "\t schema:track" +
                                     tracksTurtle +"."
 
-                                createTurtle(stringTurtle,"MusicPlayList"+type.cat+".ttl","text/plain")
+                               // createTurtle(stringTurtle,"MusicPlayList"+type.cat+".ttl","text/plain")
                             }
 
                             break;
@@ -262,7 +262,7 @@ let getTopList = (opt, id, type) => $.ajax({
                                     "\t schema:itemListElement" +
                                     artistsTurtle +"."
 
-                                createTurtle(stringTurtle,"MusicGroupList"+type.cat+".ttl","text/plain")
+                                //createTurtle(stringTurtle,"MusicGroupList"+type.cat+".ttl","text/plain")
                             }
 
 
@@ -330,7 +330,7 @@ let getTopList = (opt, id, type) => $.ajax({
                                     "\t schema:itemListElement" +
                                     albumsTurtle +"."
 
-                                createTurtle(stringTurtle,"MusicAlbumList"+type.cat+".ttl","text/plain")
+                               // createTurtle(stringTurtle,"MusicAlbumList"+type.cat+".ttl","text/plain")
                             }
 
                             break;
@@ -466,7 +466,7 @@ let getInformation = (method, artist, trackOrAlbum) => $.ajax({
 					"dateCreated": ((item.wiki) ? item.wiki.published : ""),
                     "description": ((item.wiki) ? item.wiki.summary : ""),
                     "text": ((item.wiki) ? item.wiki.content : ""),
-                    "keywords": item.toptags.tag.map(t =>  t.name).join(', '),
+                    "keywords": item.toptags.tag.map(t =>  addslashes(t.name)).join(', '),
                     "byArtist": {
                         "@type": "MusicGroup",
                         "name": addslashes(item.artist.name)
@@ -504,7 +504,7 @@ let getInformation = (method, artist, trackOrAlbum) => $.ajax({
                     "\t schema:text '"+addslashes(((item.wiki) ? item.wiki.content : "")).replace(/\r?\n|\r/g, "")+"'^^xsd:string .\n"
 
 
-                createTurtle(stringTurtle,"MusicInfo["+addslashes(item.name)+"].ttl","text/plain")
+               // createTurtle(stringTurtle,"MusicInfo["+addslashes(item.name)+"].ttl","text/plain")
 
 
 
@@ -552,12 +552,12 @@ let getInformation = (method, artist, trackOrAlbum) => $.ajax({
                     "\t\t\t schema:value '" + ((item.stats) ? nFormatter(item.stats.listeners, 1) : 'nenhum')+"'^^xsd:string\n" +
                     "\t\t]\n" +
                     "\t] ;\n" +
-                    "\t schema:keywords '"+item.tags.tag.map(t =>  t.name).join(', ')+"'^^xsd:string; \n" +
+                    "\t schema:keywords '"+item.tags.tag.map(t =>  addslashes(t.name)).join(', ')+"'^^xsd:string; \n" +
                     "\t schema:text '"+addslashes(((item.bio) ? item.bio.content : "")).replace(/\r?\n|\r/g, "")+"'^^xsd:string ;\n" +
                     "\t schema:sameAs '" +((item.similar && item.similar.artist !== '') ? item.similar.artist.map((s) => s.url).join(', '): "")+"'."
 
 
-                createTurtle(stringTurtle,"ArtistInfo["+addslashes(item.name)+"].ttl","text/plain")
+                //createTurtle(stringTurtle,"ArtistInfo["+addslashes(item.name)+"].ttl","text/plain")
 
 
 
@@ -648,13 +648,13 @@ let getInformation = (method, artist, trackOrAlbum) => $.ajax({
                     "\t\t\t schema:value '" + ((item.listeners) ? nFormatter(item.listeners, 1) : 'nenhum')+"'^^xsd:string\n" +
                     "\t\t]\n" +
                     "\t] ;\n" +
-                    "\t schema:keywords '"+ item.tags.tag.map(t => t.name).join(', ')+"'^^xsd:string; \n" +
+                    "\t schema:keywords '"+ item.tags.tag.map(t => addslashes(t.name)).join(', ')+"'^^xsd:string; \n" +
                     "\t schema:text '"+addslashes(((item.wiki) ? item.wiki.content : "")).replace(/\r?\n|\r/g, "")+"'^^xsd:string ;\n" +
                     "\t schema:numTracks '" + item.tracks.track.length + "'^^xsd:int;\n" +
                     "\t schema:track" + tracksAlbumTurtle +"."
 
 
-                createTurtle(stringTurtle,"AlbumInfo["+addslashes(item.name)+"].ttl","text/plain")
+               // createTurtle(stringTurtle,"AlbumInfo["+addslashes(item.name)+"].ttl","text/plain")
 
             }
 
