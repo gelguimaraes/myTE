@@ -35,7 +35,7 @@ const optCountry = {
 //captura clique das categorias
 $('ul.cat li').on('touchend click', function () {
     execSlide();
-    $('.radio').animate({'margin-bottom': '0px', 'top': '0px'}, 200).css({"display": "block"});
+   // $('.radio').animate({'margin-bottom': '0px', 'top': '0px'}, 200).css({"display": "block"});
 });
 
 //captura clique da tab de midias tracks, artistas e albums para categorias
@@ -128,7 +128,9 @@ let getTopList = (opt, id, type) => $.ajax({
         albums = [];
         tracksCountry = [];
         artistsCountry = [];
-
+        tracksTurtle = [];
+        artistsTurtle = [];
+        albumsTurtle = [];
 
 
         //console.log(objItems)
@@ -140,17 +142,18 @@ let getTopList = (opt, id, type) => $.ajax({
                 if (method === 'tag') { // por categorias ou ritmos
                     switch (secondKey) {
                         case 'track':
-                            html = "<li class='track'><span class='rank'>#" + item['@attr']['rank'] + "</span><figure><img width='60' height='60' src='" + ((item.image[1]['#text']) ? item.image[1]['#text'] : "images/track.png") + "'></img></figure><p class='trackName'>" + item.name + ((item.duration !== "0") ? " [" + formatSeconds(item.duration) + "]" : "") + "<a data-lity  href='#boxInfo'  onclick=\"$('#boxInfo').html('<span class=loading></span>'); getInformation('artist.getInfo', '" + addslashes(item.artist.name) + "')\">" + item.artist.name + "</a></p><a data-lity class='info' href='#boxInfo' onclick=\"$('#boxInfo').html('<span class=loading></span>'); getInformation('track.getInfo', '" + addslashes(item.artist.name) + "', '" + addslashes(item.name) + "')\"><i class='fa fa-info-circle'></i></a></li>"
+                            html = "<li class='track'><span class='rank'>#" + item['@attr']['rank'] + "</span><figure><img width='60' height='60' src='" + ((item.image[1]['#text']) ? item.image[1]['#text'] : "images/track.png") + "'></img></figure><p class='trackName'>" + item.name + ((item.duration !== "0") ? " [" + formatSeconds(item.duration) + "]" : "") + "<a data-lity href='#boxInfo'  onclick=\"$('#boxInfo').html('<span class=loading></span>'); getInformation('artist.getInfo', '" + addslashes(item.artist.name) + "')\">" + item.artist.name + "</a></p><a data-lity class='info' href='#boxInfo' onclick=\"$('#boxInfo').html('<span class=loading></span>'); getInformation('track.getInfo', '" + addslashes(item.artist.name) + "', '" + addslashes(item.name) + "')\"><i class='fa fa-info-circle'></i></a></li>"
 
                             track = {
                                 "@type": "MusicRecording",
-                                "name": item.name,
+                                "name": addslashes(item.name),
                                 "position": item['@attr']['rank'],
+                                "url": "https://gelguimaraes.github.io/myTE/site/index.html?track#" + item.artist.name +"/"  + item.name,
                                 "image": ((item.image[1]['#text']) ? item.image[1]['#text'] : "images/track.png"),
                                 "duration": item.duration + "s",
                                 "byArtist": {
                                     "@type": "MusicGroup",
-                                    "name": item.artist.name
+                                    "name": addslashes(item.artist.name)
                                 }
                             };
 
@@ -159,16 +162,51 @@ let getTopList = (opt, id, type) => $.ajax({
                            MusicPlaylist = {
                                 "@context": "http://schema.org",
                                 "@type": "MusicPlaylist",
+                                //"@id":"https://gelguimaraes.github.io/myTE/site/",
                                 "name": "Top Tracks em " + type.cat,
                                 "genre": type.cat,
                                 "track": tracks
 
                             }
                             crateJson_ld(MusicPlaylist, "musicList")
+
+                            trackTurtle = "\n\t[\n" +
+                                "\t\t a schema:MusicRecording ;\n" +
+                                "\t\t schema:byArtist [\n" +
+                                "\t\t\t a schema:MusicGroup ;\n" +
+                                "\t\t\t schema:name '"+addslashes(item.artist.name)+"'^^xsd:string ;\n" +
+                                "\t\t ] ;\n" +
+                                "\t\t schema:duration '" + item.duration + "s'^^xsd:string ;\n" +
+                                "\t\t schema:image <"+ ((item.image[1]['#text']) ? item.image[1]['#text'] : "images/track.png") +"> ;\n" +
+                                "\t\t schema:name '"+addslashes(item.name)+"'^^xsd:string ;\n" +
+                                "\t\t schema:position '"+item['@attr']['rank']+"'^^xsd:string ;\n"+
+                                "\t\t schema:url <https://gelguimaraes.github.io/myTE/site/index.html?track#" + item.artist.name.replace(/\s/g, "%20") +"/"  + item.name.replace(/\s/g, "%20") +">\n" +
+                                "\t]"
+
+
+                            tracksTurtle.push(trackTurtle)
+
+                            if(item['@attr']['rank'] == 30){
+                                let stringTurtle = "" +
+                                    "@base <https://gelguimaraes.github.io/myTE/site/>.\n"+
+                                    "@prefix schema: <http://schema.org/> .\n" +
+                                    "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n\n"+
+                                    "<https://gelguimaraes.github.io/myTE/site/>\n"+
+                                    "\t a schema:MusicPlaylist;\n"+
+                                    "\t schema:genre '"+ type.cat  + "'^^xsd:string;\n" +
+                                    "\t schema:name 'Top Tracks em " + type.cat + "'^^xsd:string;\n"+
+                                    "\t schema:track" +
+                                    tracksTurtle +"."
+
+                                createTurtle(stringTurtle,"MusicPlayList"+type.cat+".ttl","text/plain")
+                            }
+
                             break;
 
                         case 'artist':
                             html = "<li class='artist'><span class='rank'>#" + item['@attr']['rank'] + "</span><figure><img width='90' height='90'src='" + ((item.image[2]['#text']) ? item.image[2]['#text'] : "images/artist.png") + "'></img></figure><p class='artistName'>" + item.name + "</p><a data-lity class='info' href='#boxInfo' onclick=\"$('#boxInfo').html('<div class=loading></div>'); getInformation('artist.getInfo', '" + addslashes(item.name) + "')\"><i class='fa fa-info-circle'></i></a></li>"
+
+
 
                             artist = {
                                 "@type": "ListItem",
@@ -176,8 +214,8 @@ let getTopList = (opt, id, type) => $.ajax({
                                 "item": {
                                     "@type": "MusicGroup",
                                     "genre": type.cat,
-                                    "name": item.name,
-                                    "url": "index.html?=" + item.url,
+                                    "name": addslashes(item.name),
+                                    "url": "https://gelguimaraes.github.io/myTE/site/index.html?artist#" + item.name,
                                     "sameAs": item.url,
                                     "image": ((item.image[2]['#text']) ? item.image[2]['#text'] : "images/artist.png")
                                 }
@@ -189,10 +227,45 @@ let getTopList = (opt, id, type) => $.ajax({
                             ArtistPlaylist = {
                                 "@context": "http://schema.org",
                                 "@type": "Itemlist",
+                               // "@id":"https://gelguimaraes.github.io/myTE/site/",
                                 "name": "Top Artists em " + type.cat,
                                 "itemListElement": artists
                             }
                             crateJson_ld(ArtistPlaylist, "itemList")
+
+
+                            artistTurtle = "\n\t[\n" +
+                                "\t\t a schema:ListItem ;\n" +
+                                "\t\t schema:position '"+item['@attr']['rank']+"'^^xsd:string ;\n"+
+                                "\t\t schema:item [\n" +
+                                "\t\t\t a schema:MusicGroup ;\n" +
+                                "\t\t\t schema:genre '"+ type.cat  + "'^^xsd:string;\n" +
+                                "\t\t\t schema:name '"+addslashes(item.name)+"'^^xsd:string;\n" +
+                                "\t\t\t schema:image <"+ ((item.image[2]['#text']) ? item.image[2]['#text'] : "images/artist.png") +"> ;\n" +
+
+
+                                "\t\t\t schema:url <https://gelguimaraes.github.io/myTE/site/index.html?artist#" + item.name.replace(/\s/g, "%20")+">\n"+
+                                "\t\t];\n" +
+                                "\t]"
+
+
+                            artistsTurtle.push(artistTurtle)
+
+                            if(item['@attr']['rank'] == 30){
+                                let stringTurtle = "" +
+                                    "@base <https://gelguimaraes.github.io/myTE/site/>.\n"+
+                                    "@prefix schema: <http://schema.org/> .\n" +
+                                    "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n\n"+
+                                    "<https://gelguimaraes.github.io/myTE/site/>\n"+
+                                    "\t a schema:Itemlist;\n"+
+                                    "\t schema:name 'Top Artists em " + type.cat + "'^^xsd:string;\n"+
+                                    "\t schema:itemListElement" +
+                                    artistsTurtle +"."
+
+                                createTurtle(stringTurtle,"MusicGroupList"+type.cat+".ttl","text/plain")
+                            }
+
+
                             break;
 
                         case 'album':
@@ -204,12 +277,12 @@ let getTopList = (opt, id, type) => $.ajax({
                                 "item": {
                                     "@type": "MusicAlbum",
                                     "genre": type.cat,
-                                    "name": item.name,
-                                    "url": "index.html?=" + item.url,
+                                    "name": addslashes(item.name),
+                                    "url": "https://gelguimaraes.github.io/myTE/site/index.html?album#" + item.artist.name +"/"  + item.name,
                                     "image": ((item.image[2]['#text']) ? item.image[2]['#text'] : "images/artist.png"),
                                     "byArtist": {
                                         "@type": "MusicGroup",
-                                        "name": item.artist.name
+                                        "name": addslashes(item.artist.name)
                                     }
                                 }
 
@@ -224,6 +297,42 @@ let getTopList = (opt, id, type) => $.ajax({
                                 "itemListElement": albums
                             }
                             crateJson_ld(AlbumPlaylist, "itemList")
+
+
+                            albumTurtle = "\n\t[\n" +
+                                "\t\t a schema:ListItem ;\n" +
+                                "\t\t schema:position '"+item['@attr']['rank']+"'^^xsd:string ;\n"+
+                                "\t\t schema:item [\n" +
+                                "\t\t\t a schema:MusicAlbum ;\n" +
+                                "\t\t\t schema:byArtist [\n" +
+                                "\t\t\t\t a schema:MusicGroup ;\n" +
+                                "\t\t\t\t schema:name '"+addslashes(item.artist.name)+"'^^xsd:string ;\n" +
+                                "\t\t\t ] ;\n" +
+                                "\t\t\t schema:image <"+ ((item.image[2]['#text']) ? item.image[2]['#text'] : "images/artist.png") +"> ;\n" +
+                                "\t\t\t schema:name '"+addslashes(item.name)+"'^^xsd:string ;\n" +
+                                "\t\t\t schema:url <https://gelguimaraes.github.io/myTE/site/index.html?album#" + item.artist.name.replace(/\s/g, "%20") +"/"  + item.name.replace(/\s/g, "%20") +">\n" +
+                                "\t\t];\n" +
+                                "\t]"
+
+
+
+                            albumsTurtle.push(albumTurtle)
+
+                            if(item['@attr']['rank'] == 30){
+                                let stringTurtle = "" +
+                                    "@base <https://gelguimaraes.github.io/myTE/site/>.\n"+
+                                    "@prefix schema: <http://schema.org/> .\n" +
+                                    "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n\n"+
+                                    "<https://gelguimaraes.github.io/myTE/site/>\n"+
+                                    "\t a schema:Itemlist;\n"+
+                                    "\t schema:genre '"+ type.cat  + "'^^xsd:string;\n" +
+                                    "\t schema:name 'Top Albums em " + type.cat + "'^^xsd:string;\n"+
+                                    "\t schema:itemListElement" +
+                                    albumsTurtle +"."
+
+                                createTurtle(stringTurtle,"MusicAlbumList"+type.cat+".ttl","text/plain")
+                            }
+
                             break;
                     }
 
@@ -237,6 +346,7 @@ let getTopList = (opt, id, type) => $.ajax({
                                 "@type": "MusicRecording",
                                 "name": item.name,
                                 "image": ((item.image[0]['#text']) ? item.image[0]['#text'] : "images/track.png"),
+                                "url": "https://gelguimaraes.github.io/myTE/site/index.html?track#" + item.artist.name +"/"  + item.name,
                                 "interactionStatistic": {
                                     "@type": "InteractionCounter",
                                     "identifier": {
@@ -280,17 +390,9 @@ let getTopList = (opt, id, type) => $.ajax({
                                         "@type": "Place",
                                         "name": type.country,
                                     },
-                                    "url": "index.html?=" + item.url,
+                                    "url": "https://gelguimaraes.github.io/myTE/site/index.html?artist#" + item.name,
                                     "sameAs": item.url,
                                     "image": ((item.image[0]['#text']) ? item.image[0]['#text'] : "images/artist.png"),
-                                    // "interactionStatistic": {
-                                    //     "@type": "InteractionCounter",
-                                    //     "identifier": {
-                                    //         "@type": "PropertyValue",
-                                    //         "name": "Ouvintes de " + item.name,
-                                    //         "value": nFormatter(item.listeners, 1)
-                                    //     }
-                                    // }
                                 }
                             };
 
@@ -309,8 +411,10 @@ let getTopList = (opt, id, type) => $.ajax({
                     }
                 }
                 return html;
-            }) //fim funcao append
+            }), //fim funcao append
+
         ) //fim map
+
     }, //fim json
     error: function (json) {
         //alert("Error");
@@ -341,24 +445,21 @@ let getInformation = (method, artist, trackOrAlbum) => $.ajax({
                 html = "<div class='contentInfo'><div class='contentTop'><a class='infoTitle' target='_blank' href='" + item.url + "'><i class='fa fa-play'></i>" + item.name + ((item.duration !== "0") ? " [" + formatMiliSeconds(item.duration) + "]" : "") + "</a></div><div class='contentLeft'><figure><img class='imgTrackInfo' src='" + ((item.album && item.album.image[3]['#text'] !== '') ? item.album.image[3]['#text'] : "images/album.png") + "'></figure>" + ((item.album) ? "<p class='Album'><a class='infoAlbum' href='#boxInfo' onclick=\"$('#boxInfo').html('<div class=loading></div>'); getInformation('album.getInfo', '" + addslashes(item.artist.name) + "','" + addslashes(item.album.title) + "')\"><i class='fa fa-music'></i>" + item.album.title + "</a></p>" : '') + "<p class='Artist'><a  class='infoArtist' href='#boxInfo' onclick=\"$('#boxInfo').html('<div class=loading></div>'); getInformation('artist.getInfo', '" + addslashes(item.artist.name) + "')\"><i class='fa fa-user-circle'></i>" + item.artist.name + "</a></p> <span class='ouvintes'><i class='fa fa-headphones'></i>" + ((item.listeners) ? nFormatter(item.listeners, 1) : 'sem') + " ouvintes</span> <span class='toptags'><i class='fa fa-tags'></i>Top Tags:<br>" + item.toptags.tag.map(t => '#' + t.name).join(' ') + "</span></div><div class='contentRight'>" + ((item.wiki) ? "<p class='wiki'>Biografia by Wiki</p><p class='publibWiki'><i class='fa fa-calendar-o'></i>" + item.wiki.published + "</p><p class='sumaryWiki'><i class='fa fa-comments'></i>" + item.wiki.summary + "</p><p class='contentWiki'><i class='fa fa-align-justify'></i>" + item.wiki.content + "</p>" + ((item.wiki.content.length > 720) ? "<p class='expand'><a class='textExpand'><i class='fa fa-angle-double-down'></i></a><p>" : '') : '') + "</div></div>";
 
 
-
-
-
                 //tracks similares
                getTrackSimilar(item.artist.name.replace('&', '%26'), item.name.replace('&', '%26'));
 
                 MusicRecording = {
                     "@context": "http://schema.org",
                     "@type": "MusicRecording",
-                    "name": item.name,
+                    "name": addslashes(item.name),
                     "image": ((item.album && item.album.image[3]['#text'] !== '') ? item.album.image[3]['#text'] : "images/album.png"),
                     "duration": item.duration + "ms",
-                    "inAlbum" : item.album.title,
+                    "inAlbum" : addslashes(item.album.title),
                     "interactionStatistic": {
                         "@type": "InteractionCounter",
                         "identifier": {
                             "@type": "PropertyValue",
-                            "name": "Ouvintes do track " + item.name,
+                            "name": "Ouvintes do track " + addslashes(item.name),
                             "value": ((item.listeners) ? nFormatter(item.listeners, 1) : 'nenhum'),
                         }
                     },
@@ -368,11 +469,45 @@ let getInformation = (method, artist, trackOrAlbum) => $.ajax({
                     "keywords": item.toptags.tag.map(t =>  t.name).join(', '),
                     "byArtist": {
                         "@type": "MusicGroup",
-                        "name": item.artist.name
+                        "name": addslashes(item.artist.name)
                     }
                 }
 
                 crateJson_ld(MusicRecording, "musicRecording")
+
+                let stringTurtle = "" +
+                    "@base <https://gelguimaraes.github.io/myTE/site/?track>.\n"+
+                    "@prefix schema: <http://schema.org/> .\n" +
+                    "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n\n"+
+                    "<#" + item.artist.name.replace(/\s/g, "%20") +"/"  + item.name.replace(/\s/g, "%20") +">\n"+
+                    "\t a schema:MusicRecording ;\n" +
+                    "\t schema:name '"+addslashes(item.name)+"'^^xsd:string ;\n" +
+                    "\t schema:byArtist [\n" +
+                    "\t\t a schema:MusicGroup ;\n" +
+                    "\t\t schema:name '"+addslashes(item.artist.name)+"'^^xsd:string ;\n" +
+                    "\t ] ;\n" +
+                    "\t schema:duration '" + item.duration + "s'^^xsd:string ;\n" +
+                    "\t schema:image <"+ ((item.album && item.album.image[3]['#text'] !== '') ? item.album.image[3]['#text'] : "images/album.png") +"> ;\n" +
+                    "\t schema:url <https://gelguimaraes.github.io/myTE/site/index.html?track#" + item.artist.name.replace(/\s/g, "%20") +"/"  + item.name.replace(/\s/g, "%20") +">;\n" +
+                    "\t schema:dateCreated '"+((item.wiki) ? item.wiki.published : "")+"'^^schema:Date ;\n" +
+                    "\t schema:description '"+addslashes(((item.wiki) ? item.wiki.summary : "")).replace(/\r?\n|\r/g, "") +"'^^xsd:string ;\n" +
+                    "\t schema:inAlbum '" + addslashes(item.album.title) + "'^^xsd:string ;\n" +
+                    "\t schema:interactionStatistic [\n" +
+                    "\t\t a schema:InteractionCounter ;\n" +
+                    "\t\t schema:identifier [ \n" +
+                    "\t\t\t a schema:PropertyValue ;\n" +
+                    "\t\t\t schema:name 'Ouvintes do track " + addslashes(item.name)+ "'^^xsd:string ;\n" +
+                    "\t\t\t schema:value '" + ((item.listeners) ? nFormatter(item.listeners, 1) : 'nenhum')+"'^^xsd:string\n" +
+                    "\t\t]\n" +
+                    "\t] ;\n" +
+                    "\t schema:keywords '"+item.toptags.tag.map(t =>  t.name).join(', ')+"'^^xsd:string; \n" +
+                    "\t schema:text '"+addslashes(((item.wiki) ? item.wiki.content : "")).replace(/\r?\n|\r/g, "")+"'^^xsd:string .\n"
+
+
+                createTurtle(stringTurtle,"MusicInfo["+addslashes(item.name)+"].ttl","text/plain")
+
+
+
 
             } else if (method === 'artist') {
                 $(".lity").css({
@@ -389,23 +524,44 @@ let getInformation = (method, artist, trackOrAlbum) => $.ajax({
                 MusicGroup = {
                     "@context": "http://schema.org",
                     "@type": "MusicGroup",
-                    "name": item.name,
+                    "name": addslashes(item.name),
+                    "url": "https://gelguimaraes.github.io/myTE/site/index.html?artist#" + item.name,
                     "image": ((item.image && item.image[3]['#text'] !== '') ? item.image[3]['#text'] : "images/artist.png"),
-                    // "interactionStatistic": {
-                    //     "@type": "InteractionCounter",
-                    //     "identifier": {
-                    //         "@type": "PropertyValue",
-                    //         "name": "Ouvintes do Artista " + item.name,
-                    //         "value": ((item.stats.listeners) ? nFormatter(item.stats.listeners, 1) : 'sem')
-                    //     }
-                    // },
-                    //"dateCreated": item.bio.published,
                     "description": item.bio.content,
-                   // "keywords": item.tags.tag.map(t => '#' + t.name).join(', '),
                     "sameAs": ((item.similar && item.similar.artist !== '') ? item.similar.artist.map((s) => s.url).join(', '): "")
                 }
 
                 crateJson_ld(MusicGroup, "musicGroup")
+
+                let stringTurtle = "" +
+                    "@base <https://gelguimaraes.github.io/myTE/site/?artist>.\n"+
+                    "@prefix schema: <http://schema.org/> .\n" +
+                    "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n\n"+
+                    "<#" + item.name.replace(/\s/g, "%20") +">\n"+
+                    "\t a schema:MusicGroup ;\n" +
+                    "\t schema:name '"+addslashes(item.name)+"'^^xsd:string ;\n" +
+                    "\t schema:image <"+ ((item.image && item.image[3]['#text'] !== '') ? item.image[3]['#text'] : "images/artist.png") +"> ;\n" +
+                    "\t schema:url <https://gelguimaraes.github.io/myTE/site/index.html?artist#" + item.name.replace(/\s/g, "%20") +">;\n" +
+                    "\t schema:dateCreated '"+((item.bio) ? item.bio.published : "")+"'^^schema:Date ;\n" +
+                    "\t schema:description '"+addslashes(((item.bio) ? item.bio.summary : "")).replace(/\r?\n|\r/g, "") +"'^^xsd:string ;\n" +
+                    "\t schema:interactionStatistic [\n" +
+                    "\t\t a schema:InteractionCounter ;\n" +
+                    "\t\t schema:identifier [ \n" +
+                    "\t\t\t a schema:PropertyValue ;\n" +
+                    "\t\t\t schema:name 'Ouvintes do artista " + addslashes(item.name)+ "'^^xsd:string ;\n" +
+                    "\t\t\t schema:value '" + ((item.stats) ? nFormatter(item.stats.listeners, 1) : 'nenhum')+"'^^xsd:string\n" +
+                    "\t\t]\n" +
+                    "\t] ;\n" +
+                    "\t schema:keywords '"+item.tags.tag.map(t =>  t.name).join(', ')+"'^^xsd:string; \n" +
+                    "\t schema:text '"+addslashes(((item.bio) ? item.bio.content : "")).replace(/\r?\n|\r/g, "")+"'^^xsd:string ;\n" +
+                    "\t schema:sameAs '" +((item.similar && item.similar.artist !== '') ? item.similar.artist.map((s) => s.url).join(', '): "")+"'."
+
+
+                createTurtle(stringTurtle,"ArtistInfo["+addslashes(item.name)+"].ttl","text/plain")
+
+
+
+
 
 
             } else if (method === 'album') {
@@ -428,7 +584,7 @@ let getInformation = (method, artist, trackOrAlbum) => $.ajax({
                 })
 
 
-                console.log(tracksAlbum)
+                //console.log(tracksAlbum)
 
                 MusicAlbum = {
                     "@context": "http://schema.org",
@@ -455,6 +611,50 @@ let getInformation = (method, artist, trackOrAlbum) => $.ajax({
                     "track": tracksAlbum
                 }
                 crateJson_ld(MusicAlbum , "musicAlbum")
+
+
+                tracksAlbumTurtle = []
+
+                item.tracks.track.map((tr) => {
+                trackAlbumTurtle = "\n\t[\n" +
+                    "\t\t a schema:MusicRecording ;\n" +
+                    "\t\t schema:name '"+addslashes(item.name)+"'^^xsd:string ;\n" +
+                    "\t\t schema:duration '" + item.duration + "s'^^xsd:string ;\n" +
+                    "\t\t schema:url <https://gelguimaraes.github.io/myTE/site/index.html?track#" + item.artist.replace(/\s/g, "%20") +"/"  + item.name.replace(/\s/g, "%20") +">\n" +
+                    "\t]"
+                    tracksAlbumTurtle.push(trackAlbumTurtle)
+                })
+
+                let stringTurtle = "" +
+                    "@base <https://gelguimaraes.github.io/myTE/site/?album>.\n"+
+                    "@prefix schema: <http://schema.org/> .\n" +
+                    "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n\n"+
+                    "<#" + item.artist.replace(/\s/g, "%20") +"/"  + item.name.replace(/\s/g, "%20") +">\n"+
+                    "\t a schema:MusicAubum ;\n" +
+                    "\t schema:name '"+addslashes(item.name)+"'^^xsd:string ;\n" +
+                    "\t schema:byArtist [\n" +
+                    "\t\t a schema:MusicGroup ;\n" +
+                    "\t\t schema:name '"+addslashes(item.artist)+"'^^xsd:string ;\n" +
+                    "\t ] ;\n" +
+                    "\t schema:image <"+ ((item.image && item.image[3]['#text'] !== '') ? item.image[3]['#text'] : "images/album.png") +"> ;\n" +
+                    "\t schema:url <https://gelguimaraes.github.io/myTE/site/index.html?album#" + item.artist.replace(/\s/g, "%20") +"/"  + item.name.replace(/\s/g, "%20") +">;\n" +
+                    "\t schema:dateCreated '"+((item.wiki) ? item.wiki.published : "")+"'^^schema:Date ;\n" +
+                    "\t schema:description '"+addslashes(((item.wiki) ? item.wiki.summary : "")).replace(/\r?\n|\r/g, "") +"'^^xsd:string ;\n" +
+                    "\t schema:interactionStatistic [\n" +
+                    "\t\t a schema:InteractionCounter ;\n" +
+                    "\t\t schema:identifier [ \n" +
+                    "\t\t\t a schema:PropertyValue ;\n" +
+                    "\t\t\t schema:name 'Ouvintes do track " + addslashes(item.name)+ "'^^xsd:string ;\n" +
+                    "\t\t\t schema:value '" + ((item.listeners) ? nFormatter(item.listeners, 1) : 'nenhum')+"'^^xsd:string\n" +
+                    "\t\t]\n" +
+                    "\t] ;\n" +
+                    "\t schema:keywords '"+ item.tags.tag.map(t => t.name).join(', ')+"'^^xsd:string; \n" +
+                    "\t schema:text '"+addslashes(((item.wiki) ? item.wiki.content : "")).replace(/\r?\n|\r/g, "")+"'^^xsd:string ;\n" +
+                    "\t schema:numTracks '" + item.tracks.track.length + "'^^xsd:int;\n" +
+                    "\t schema:track" + tracksAlbumTurtle +"."
+
+
+                createTurtle(stringTurtle,"AlbumInfo["+addslashes(item.name)+"].ttl","text/plain")
 
             }
 
@@ -736,16 +936,6 @@ let execSearch = () => {
 };
 
 
-let redirect = () => {
-    let url = window.location.href
-    let redirect = url.split("=");
-    //console.log(redirect[1])
-    if (redirect[1] != undefined) {
-        return window.location.href = redirect[1]
-    }
-    return false
-}
-
 //formata milisegundos em time min
 let formatMiliSeconds = (ms) => {
     let hours = Math.floor(ms / 3600000);
@@ -821,6 +1011,53 @@ let crateJson_ld = (object, id) =>{
     }
         $("head").append(s);
 
+}
+
+let createTurtle = (data, filename, type) => {
+    //console.log(data)
+    var file = new Blob([data], {type: type});
+    if (window.navigator.msSaveOrOpenBlob) // IE10+
+        window.navigator.msSaveOrOpenBlob(file, filename);
+    else { // Others
+        var a = document.createElement("a"),
+            url = URL.createObjectURL(file);
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function() {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }, 0);
+    }
+}
+
+let redirect = () => {
+   // index.html?artist#name
+    let url = window.location.href
+    let params = url.split("?");
+
+    //console.log(redirect[1])
+    //https://gelguimaraes.github.io/myTE/site/index.html?track#" + item.artist.name +"/"  + item.name
+    //https://gelguimaraes.github.io/myTE/site/index.html?artist#" + item.name
+    //https://gelguimaraes.github.io/myTE/site/index.html?album#" + item.artist.name +"/"  + item.name
+
+    if (params[1] != undefined) {
+        let type = (params[1].split("#"))[0]
+        let artist = (params[1].split("#"))[1]
+        let trackorAlbum = artist.split("/")
+        let a = document.createElement("a")
+        a.setAttribute("data-lity", "")
+        a.href = "#boxInfo";
+        document.body.appendChild(a);
+        if (trackorAlbum[1]!= undefined)
+            a.click(getInformation(type+".getInfo", trackorAlbum[0], trackorAlbum[1]))
+        else
+            a.click(getInformation(type+".getInfo", artist))
+        //console.log(a)
+        document.body.removeChild(a);
+    }
+    return false
 }
 
 //carregando todas as funcoes das listas com parametros iniciais
