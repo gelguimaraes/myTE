@@ -1044,19 +1044,23 @@ let redirect = () => {
 
     if (params[1] != undefined) {
         let type = (params[1].split("#"))[0]
-        let artist = (params[1].split("#"))[1]
-        let trackorAlbum = artist.split("/")
+        console.log("type: " + type)
+        let secondParams = (params[1].split("#"))[1]
+        console.log("name: " + secondParams)
+
         let a = document.createElement("a")
         a.setAttribute("data-lity", "")
         a.href = "#boxInfo";
         document.body.appendChild(a);
-        if (trackorAlbum[1]!= undefined) {
-            console.log("artista: " + trackorAlbum[0])
-            console.log("trackoralbum: " + trackorAlbum[1])
+        if(type != 'artist'){
+            let trackorAlbum = secondParams.split("/")
+            console.log("nome artista: " + trackorAlbum[0])
+            console.log("nome trackoralbum: " + trackorAlbum[1])
             a.click(getInformation(type + ".getInfo", trackorAlbum[0], trackorAlbum[1]))
-        }else
-            a.click(getInformation(type+".getInfo", artist))
-           console.log(artist)
+        }else {
+            a.click(getInformation(type + ".getInfo", secondParams))
+            console.log("nome artista: " + secondParams)
+        }
         document.body.removeChild(a);
     }
     return false
