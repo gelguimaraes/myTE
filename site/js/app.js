@@ -198,7 +198,7 @@ let getTopList = (opt, id, type) => $.ajax({
                                     "\t schema:track" +
                                     tracksTurtle +"."
 
-                               // createTurtle(stringTurtle,"MusicPlayList"+type.cat+".ttl","text/plain")
+                                createTurtle(stringTurtle,"MusicPlayList"+type.cat+".ttl","text/plain")
                             }
 
                             break;
@@ -262,7 +262,7 @@ let getTopList = (opt, id, type) => $.ajax({
                                     "\t schema:itemListElement" +
                                     artistsTurtle +"."
 
-                                //createTurtle(stringTurtle,"MusicGroupList"+type.cat+".ttl","text/plain")
+                                createTurtle(stringTurtle,"MusicGroupList"+type.cat+".ttl","text/plain")
                             }
 
 
@@ -330,7 +330,7 @@ let getTopList = (opt, id, type) => $.ajax({
                                     "\t schema:itemListElement" +
                                     albumsTurtle +"."
 
-                               // createTurtle(stringTurtle,"MusicAlbumList"+type.cat+".ttl","text/plain")
+                                createTurtle(stringTurtle,"MusicAlbumList"+type.cat+".ttl","text/plain")
                             }
 
                             break;
@@ -427,6 +427,7 @@ let getInformation = (method, artist, trackOrAlbum) => $.ajax({
     url: (optAPI.apiUrl + 'method=' + method + '&artist=' + artist + '&track=' + trackOrAlbum + '&album=' + trackOrAlbum + '&api_key=' + optAPI.apiKey + '&format=json'),
     method: 'GET',
     dataType: 'JSON',
+    async: false,
     success: function (json) {
         let key = Object.keys(json)[0];
         //console.log(key);
@@ -504,7 +505,7 @@ let getInformation = (method, artist, trackOrAlbum) => $.ajax({
                     "\t schema:text '"+addslashes(((item.wiki) ? item.wiki.content : "")).replace(/\r?\n|\r/g, "")+"'^^xsd:string .\n"
 
 
-               // createTurtle(stringTurtle,"MusicInfo["+addslashes(item.name)+"].ttl","text/plain")
+                createTurtle(stringTurtle,"MusicInfo["+addslashes(item.name)+"].ttl","text/plain")
 
 
 
@@ -557,7 +558,7 @@ let getInformation = (method, artist, trackOrAlbum) => $.ajax({
                     "\t schema:sameAs '" +((item.similar && item.similar.artist !== '') ? item.similar.artist.map((s) => s.url).join(', '): "")+"'."
 
 
-                //createTurtle(stringTurtle,"ArtistInfo["+addslashes(item.name)+"].ttl","text/plain")
+                createTurtle(stringTurtle,"ArtistInfo["+addslashes(item.name)+"].ttl","text/plain")
 
 
 
@@ -654,7 +655,7 @@ let getInformation = (method, artist, trackOrAlbum) => $.ajax({
                     "\t schema:track" + tracksAlbumTurtle +"."
 
 
-               // createTurtle(stringTurtle,"AlbumInfo["+addslashes(item.name)+"].ttl","text/plain")
+               createTurtle(stringTurtle,"AlbumInfo["+addslashes(item.name)+"].ttl","text/plain")
 
             }
 
@@ -1037,7 +1038,7 @@ let redirect = () => {
     let url = window.location.href
     let params = url.split("?");
 
-    //console.log(redirect[1])
+    console.log(params[1])
     //https://gelguimaraes.github.io/myTE/site/index.html?track#" + item.artist.name +"/"  + item.name
     //https://gelguimaraes.github.io/myTE/site/index.html?artist#" + item.name
     //https://gelguimaraes.github.io/myTE/site/index.html?album#" + item.artist.name +"/"  + item.name
