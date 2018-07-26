@@ -427,7 +427,6 @@ let getInformation = (method, artist, trackOrAlbum) => $.ajax({
     url: (optAPI.apiUrl + 'method=' + method + '&artist=' + artist + '&track=' + trackOrAlbum + '&album=' + trackOrAlbum + '&api_key=' + optAPI.apiKey + '&format=json'),
     method: 'GET',
     dataType: 'JSON',
-    async: false,
     success: function (json) {
         let key = Object.keys(json)[0];
         //console.log(key);
@@ -1038,7 +1037,7 @@ let redirect = () => {
     let url = window.location.href
     let params = url.split("?");
 
-    console.log(params[1])
+    console.log("parametros: " + params[1])
     //https://gelguimaraes.github.io/myTE/site/index.html?track#" + item.artist.name +"/"  + item.name
     //https://gelguimaraes.github.io/myTE/site/index.html?artist#" + item.name
     //https://gelguimaraes.github.io/myTE/site/index.html?album#" + item.artist.name +"/"  + item.name
@@ -1052,12 +1051,12 @@ let redirect = () => {
         a.href = "#boxInfo";
         document.body.appendChild(a);
         if (trackorAlbum[1]!= undefined) {
-            console.log(trackorAlbum[0])
-            console.log(trackorAlbum[1])
+            console.log("artista: " + trackorAlbum[0])
+            console.log("trackoralbum: " + trackorAlbum[1])
             a.click(getInformation(type + ".getInfo", trackorAlbum[0], trackorAlbum[1]))
         }else
             a.click(getInformation(type+".getInfo", artist))
-        //console.log(a)
+           console.log(artist)
         document.body.removeChild(a);
     }
     return false
