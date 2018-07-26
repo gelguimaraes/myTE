@@ -1050,9 +1050,11 @@ let redirect = () => {
         a.setAttribute("data-lity", "")
         a.href = "#boxInfo";
         document.body.appendChild(a);
-        if (trackorAlbum[1]!= undefined)
-            a.click(getInformation(type+".getInfo", trackorAlbum[0], trackorAlbum[1]))
-        else
+        if (trackorAlbum[1]!= undefined) {
+            console.log(trackorAlbum[0])
+            console.log(trackorAlbum[1])
+            a.click(getInformation(type + ".getInfo", trackorAlbum[0], trackorAlbum[1]))
+        }else
             a.click(getInformation(type+".getInfo", artist))
         //console.log(a)
         document.body.removeChild(a);
