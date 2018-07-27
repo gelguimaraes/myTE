@@ -198,7 +198,7 @@ let getTopList = (opt, id, type) => $.ajax({
                                     "\t schema:track" +
                                     tracksTurtle +"."
 
-                                //createTurtle(stringTurtle,"MusicPlayList"+type.cat+".ttl","text/plain")
+                                createTurtle(stringTurtle,"MusicPlayList"+type.cat+".ttl","text/plain")
                             }
 
                             break;
