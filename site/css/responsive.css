@@ -1,3 +1,107 @@
-*{
+@media all and (max-width: 600px) {
+	.header {
+		width: 100%;
+		display: block;
+	}
+	.equalizer {
+		display: none;
+	}
 
+	.logo a {
+		font-size: 40px;
+	}
+	.logo p {
+		font-size: 12px;
+	}
+	.search {
+		height: auto;
+		display: block;
+		margin: 30px 15px;
+	}
+	.search input {
+		width: 100%;
+		font-size: 15px;
+		padding: 20px;
+		background-image:none !important
+	}
+	.search button {
+		font-size: 15px;
+		padding: 10px;
+	}
+
+	.itensResult {
+		width: 100%; 
+		justify-content: center;
+	}
+	.titleSearch {
+		font-size: 20px;
+		margin: 30px;
+	}
+
+	.nice-select {
+		font-size: 15px;
+	}
+
+	.lists {
+		display: block; 
+		width: auto;
+		margin: 50px 10px;
+	}
+
+	#topList {
+		width: 100%;
+		margin-bottom: 50px;
+	}
+
+	#topList .rank {
+		font-size: 20px;
+	}
+	.topTitle {
+		font-size: 18px;
+	}
+	#topList p {
+		font-size: 15px;
+	}
+	#topListCountry {
+		width: 100%;
+	}
+	.icon-select {
+		margin: -38px 53px 0px auto;
+	}
+	#boxInfo {
+		min-width: 100%;
+	}
+
+	.contentInfo {
+		max-width: 100%;
+		display: block;
+	}
+
+	.contentLeft {
+		width: 100%;
+	}
+	.contentLeft figure{
+		text-align: center
+	}
+	.contentInfo .infoAlbumTrack {
+		width: 100%;
+	}
+	.contentRight {
+		margin-top: 50px;
+	}
+	.contentInfo .artistSimilar, .itemArtistTopTrack, .itemArtistTopAlbum {
+		width: 100%;
+		margin-bottom: 30px;
+	}
+	.tracksSimilares {
+		justify-content: center;
+	}
+	footer {
+		display: block;
+		font-size: 13px
+	}
+}
+@media all and (min-width: 601px) and (max-width: 975px) {
+	
+	
 }
