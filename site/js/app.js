@@ -198,7 +198,7 @@ let getTopList = (opt, id, type) => $.ajax({
                                     "\t schema:track" +
                                     tracksTurtle +"."
 
-                                createTurtle(stringTurtle,"MusicPlayList"+type.cat+".ttl","text/plain")
+                                //createTurtle(stringTurtle,"MusicPlayList"+type.cat+".ttl","text/plain")
                             }
 
                             break;
@@ -913,26 +913,26 @@ let execSlide = () => {
 
 let execSearch = () => {
     let search = $('#search').val();
-    let method = search
-    let type = method.split('.')[0];
-    if (search !== "") {
-        //console.log(validacampo(search));
-        if (validateInput(search)) {
-            $('#carousel').fadeOut();
-            $('.lists').fadeOut();
-            $('.resultSearch').css({
-                'display': 'block'
-            }).html("<span class='loading'></span>");
-            getSearch(method, type, search);
-        } else {
-            $('#search').focus();
-            alertify.alert('Por favor, digite um nome válido para buscar !');
-        }
-
-    } else {
-        $('#search').focus();
-        alertify.alert('Por favor, digite o nome de uma mídia para buscar !');
-    }
+	let method = $('#select').val();
+	let type = method.split('.')[0];
+	if (search != "") {
+		//console.log(validacampo(search));
+		if(validateInput(search)){
+			$('#carousel').fadeOut();
+			$('.lists').fadeOut();
+			$('.resultSearch').css({
+				'display': 'block'
+			}).html("<span class='loading'></span>");
+			getSearch(method, type, search);
+		}else {
+			$('#search').focus();
+			alertify.alert('Por favor, digite um nome válido para buscar !');
+		}
+		
+	} else {
+		$('#search').focus();
+		alertify.alert('Por favor, digite o nome de uma mídia para buscar !');
+	}
 };
 
 
