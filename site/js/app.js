@@ -575,6 +575,7 @@ let getInformation = (method, artist, trackOrAlbum) => $.ajax({
 
                 item.tracks.track.map((tr) => {
                     trackAlbum = {
+                        "@id":"<"+tr.url+">",
                         "@type":"MusicRecording",
                         "name": tr.name,
                         "url" : tr.url,
@@ -616,19 +617,20 @@ let getInformation = (method, artist, trackOrAlbum) => $.ajax({
                 tracksAlbumTurtle = []
 
                 item.tracks.track.map((tr) => {
-                trackAlbumTurtle = "\n\t[\n" +
-                    "\t\t a schema:MusicRecording ;\n" +
-                    "\t\t schema:name '"+addslashes(item.name)+"'^^xsd:string ;\n" +
-                    "\t\t schema:duration '" + item.duration + "s'^^xsd:string ;\n" +
-                    "\t\t schema:url <https://gelguimaraes.github.io/myTE/site/index.html?track#" + item.artist.replace(/\s/g, "%20") +"/"  + item.name.replace(/\s/g, "%20") +">\n" +
-                    "\t]"
+                trackAlbumTurtle =
+                    "\n\n\t <track:#" + item.artist.replace(/\s/g, "%20") +"/"  + item.name.replace(/\s/g, "%20") +">\n" +
+                    "\t a schema:MusicRecording ;\n" +
+                    "\t schema:name '"+addslashes(item.name)+"'^^xsd:string ;\n" +
+                    "\t schema:duration '" + item.duration + "s'^^xsd:string ;\n" +
+                    "\t schema:url <https://gelguimaraes.github.io/myTE/site/?track#" + item.artist.replace(/\s/g, "%20") +"/"  + item.name.replace(/\s/g, "%20") +">"
                     tracksAlbumTurtle.push(trackAlbumTurtle)
                 })
 
                 let stringTurtle = "" +
                     "@base <https://gelguimaraes.github.io/myTE/site/?album>.\n"+
                     "@prefix schema: <http://schema.org/> .\n" +
-                    "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n\n"+
+                    "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n"+
+                    "@prefix track: <https://gelguimaraes.github.io/myTE/site/?track> .\n\n"+
                     "<#" + item.artist.replace(/\s/g, "%20") +"/"  + item.name.replace(/\s/g, "%20") +">\n"+
                     "\t a schema:MusicAubum ;\n" +
                     "\t schema:name '"+addslashes(item.name)+"'^^xsd:string ;\n" +
@@ -650,8 +652,8 @@ let getInformation = (method, artist, trackOrAlbum) => $.ajax({
                     "\t] ;\n" +
                     "\t schema:keywords '"+ item.tags.tag.map(t => addslashes(t.name)).join(', ')+"'^^xsd:string; \n" +
                     "\t schema:text '"+addslashes(((item.wiki) ? item.wiki.content : "")).replace(/\r?\n|\r/g, "")+"'^^xsd:string ;\n" +
-                    "\t schema:numTracks '" + item.tracks.track.length + "'^^xsd:int;\n" +
-                    "\t schema:track" + tracksAlbumTurtle +"."
+                    "\t schema:numTracks '" + item.tracks.track.length + "'^^xsd:int." +
+                    "\t" + tracksAlbumTurtle.join('.') +"."
 
 
                createTurtle(stringTurtle,"AlbumInfo["+addslashes(item.name)+"].ttl","text/plain")
